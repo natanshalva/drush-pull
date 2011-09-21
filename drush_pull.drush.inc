@@ -25,6 +25,15 @@ function drush_pull_drush_command() {
     	'force' => 'Force the command',
     )
   );
+  $items['git-tag'] = array(
+    'description' => "Doing a git push if all features are in default state.",
+    //'drupal dependencies' => array('features'),
+    'aliases' => array('tag'),
+    'argument' => array(
+      'mode' => 'what to do(tag only, commit and tag, or commit + tag + push)',
+    )
+  );
+  
   return $items;
 }
 
@@ -37,7 +46,10 @@ function drush_pull_drush_help($section) {
       return dt("Doing a git pull if all features are in default state.");
     case 'drush:git-push':
       return dt("Doing a git push if all features are in default state.");
+    case 'drush:git-tag':
+      return dt("Doing a git tag ++.");
   }
+
 }
 
 /**
@@ -125,4 +137,34 @@ function _confirm() {
     else {
       drush_die('Aborting.');
     }
+}
+
+/**
+ * git tag.
+ * @param type $force 
+ */
+function drush_drush_pull_git_tag($force = '') {
+  $arg = escapeshellarg('sites/all/modules/drush-pull');  
+//  echo $arg;
+//  exec('cd "sites/all/modules/drush-pull";git describe --tags 2>&1', $output);
+  // current directory
+echo getcwd() . "\n";
+
+chdir('public_html');
+// current directory
+echo getcwd() . "\n";
+return;
+  exec(" cd $arg ; git describe --tags 2>&1", $output);
+  //  exec('git describe --tags 2>&1', $output);
+  print_r($output);
+  return;
+  if (drush_shell_exec('git describe --tags')){
+    $output = drush_shell_exec_output();
+    print_r($output);
+    drush_print($output[0]);
+    drush_print($output);
+    foreach ($output as $line) {
+      drush_print(dt($line));
+    }
+  }
 }
